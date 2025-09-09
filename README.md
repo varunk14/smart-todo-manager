@@ -14,6 +14,9 @@ A modern, single-file, AI-powered to-do list application that helps you organize
   * **Break Down Tasks:** Turn a large task into smaller, manageable steps.  
 * **Real-time & Persistent:** All tasks are saved instantly to your personal and secure Firestore database.
 
+
+LIVE DEMO: https://varunk14.github.io/smart-todo-manager/todo_app.html
+
 ## **🛠️ Tech Stack**
 
 * **Frontend:** HTML, Tailwind CSS, Vanilla JavaScript  
