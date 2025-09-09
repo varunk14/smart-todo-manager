@@ -1,16 +1,18 @@
 # **Smart To-Do Manager**
 
-A modern, AI-powered to-do list application that helps you organize your tasks efficiently. This web app is built with HTML, Tailwind CSS, and vanilla JavaScript, and it leverages Firebase for real-time data storage and the Gemini API for its intelligent features.
+A modern, single-file, AI-powered to-do list application that helps you organize your tasks efficiently. This web app is built with HTML, Tailwind CSS, and vanilla JavaScript. It features a secure, interactive setup for API keys that keeps your secrets off of GitHub.
 
 ## **✨ Features**
 
+* **Zero-Backend Setup:** The app uses Firebase and the Gemini API but requires no complex backend deployment. It runs entirely in the browser.  
+* **Interactive API Key Setup:** On first launch, the app prompts you for your API keys and saves them securely to your browser's local storage, ensuring keys are never hardcoded or exposed.  
 * **Full CRUD Functionality:** Create, Read, Update (mark as complete), and Delete tasks.  
-* **Real-time Database:** All tasks are saved instantly to a personal and secure Firestore database. Your tasks will be waiting for you when you return.  
-* **Vibrant & Responsive UI:** A lively, energetic interface with animated gradients and a modern frosted-glass effect that looks great on all devices.  
-* **AI-Powered Task Suggestions:** Describe a high-level goal (e.g., "Learn a new language"), and the AI will generate a list of actionable sub-tasks.  
-* **AI Task Prioritization:** Automatically analyzes your pending tasks and assigns a "High," "Medium," or "Low" priority to each one.  
-* **AI Daily Summary:** Get a concise, one-paragraph summary of all your pending tasks to plan your day.  
-* **AI Task Breakdown:** Break down a large, complex task into smaller, more manageable steps with a single click.
+* **AI-Powered Features:**  
+  * **Suggest Tasks:** Describe a goal and get a list of actionable to-do items.  
+  * **Prioritize Tasks:** Automatically assign "High," "Medium," or "Low" priority to your tasks.  
+  * **Summarize Your Day:** Get a concise summary of all your pending tasks.  
+  * **Break Down Tasks:** Turn a large task into smaller, manageable steps.  
+* **Real-time & Persistent:** All tasks are saved instantly to your personal and secure Firestore database.
 
 ## **🛠️ Tech Stack**
 
@@ -20,37 +22,17 @@ A modern, AI-powered to-do list application that helps you organize your tasks e
 
 ## **🚀 Getting Started**
 
-To run this project locally or deploy it yourself, follow these steps.
+This project is designed to be incredibly simple to set up and run.
 
-### **Prerequisites**
+### **Setup**
 
-* A web browser  
-* A code editor like VS Code  
-* A Google account to create Firebase and Gemini API keys
+1. **Download the Code:** You only need the todo\_app.html file.  
+2. **Open the File in Your Browser:** Simply double-click todo\_app.html or open it from your code editor (using a Live Server extension is recommended for the best experience).  
+3. **Follow On-Screen Instructions:** A setup modal will appear automatically.  
+   * Go to the [Firebase Console](https://console.firebase.google.com/) to get your firebaseConfig object.  
+   * Go to [Google AI Studio](https://aistudio.google.com/) to get your Gemini API Key.  
+   * Paste these keys into the setup form and click "Save".
 
-### **Local Setup**
+The app will start immediately, and you won't need to enter the keys again on that browser. It's that simple\!
 
-1. **Clone the repository:**  
-   git clone \[https://github.com/varunk14/smart-todo-manager.git\](https://github.com/varunk14/smart-todo-manager.git)  
-   cd smart-todo-manager
-
-2. **Create your configuration file:**  
-   * In the root of the project, create a new file named config.js.  
-   * Copy the contents of config.example.js into your new config.js file.  
-3. **Set up Firebase:**  
-   * Go to the [Firebase Console](https://console.firebase.google.com/) and create a new project.  
-   * Register a new web app (**\</\>**) and copy the firebaseConfig object.  
-   * Enable **Anonymous Authentication** in the "Authentication" \> "Sign-in method" tab.  
-   * Create a **Firestore Database** and start it in "test mode".  
-   * Paste your firebaseConfig object into the firebaseConfig constant in config.js.  
-4. **Set up Gemini API Key:**  
-   * Go to [Google AI Studio](https://aistudio.google.com/) and create a new API key.  
-   * Copy the key and paste it as the value for the GEMINI\_API\_KEY constant in config.js.  
-5. **Run the application:**  
-   * Open the todo\_app.html file in your browser. Using a live server extension in VS Code is recommended for the best experience.
-
-### **Deployment**
-
-This project can be easily deployed using services like GitHub Pages, Vercel, or Netlify. Since the config.js file (containing your API keys) is not committed to Git, you will need to configure your API keys as environment variables in your hosting provider's settings.
-
-This project was built to demonstrate modern web development practices, including the integration of powerful AI features into a user-friendly application.
+This project demonstrates a secure method for handling API keys in a client-side, single-file application, making it easy to share and demonstrate without compromising security.

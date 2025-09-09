@@ -13,131 +13,50 @@
             background-size: 400% 400%;
             animation: gradient-animation 18s ease infinite;
         }
-
-        @keyframes gradient-animation {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        .gradient-text {
-            background: -webkit-linear-gradient(45deg, #4f46e5, #a855f7);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .dark .gradient-text {
-            background: -webkit-linear-gradient(45deg, #a5b4fc, #f0abfc);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        /* Custom styles for a subtle animation on task items */
-        .task-item {
-            transition: all 0.2s ease-in-out;
-        }
-        .task-item:hover {
-            transform: scale(1.02) translateX(4px);
-        }
-        .task-item.completed > div > span {
-            text-decoration: line-through;
-            color: #9ca3af; /* gray-400 */
-        }
-        .loading-spinner {
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-top: 4px solid #ffffff;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            animation: spin 1s linear infinite;
-        }
-        .loading-spinner-small {
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-top: 2px solid #ffffff;
-            border-radius: 50%;
-            width: 16px;
-            height: 16px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        /* Modal styles */
-        .modal-overlay {
-            transition: opacity 0.3s ease;
-        }
-        .modal-content {
-            transition: transform 0.3s ease, opacity 0.3s ease;
-        }
+        @keyframes gradient-animation { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        .gradient-text { background: -webkit-linear-gradient(45deg, #4f46e5, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .dark .gradient-text { background: -webkit-linear-gradient(45deg, #a5b4fc, #f0abfc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .task-item { transition: all 0.2s ease-in-out; }
+        .task-item:hover { transform: scale(1.02) translateX(4px); }
+        .task-item.completed > div > span { text-decoration: line-through; color: #9ca3af; }
+        .loading-spinner { border: 4px solid rgba(255, 255, 255, 0.3); border-top: 4px solid #ffffff; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; }
+        .loading-spinner-small { border: 2px solid rgba(255, 255, 255, 0.3); border-top: 2px solid #ffffff; border-radius: 50%; width: 16px; height: 16px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .modal-overlay { transition: opacity 0.3s ease; }
+        .modal-content { transition: transform 0.3s ease, opacity 0.3s ease; }
     </style>
 </head>
 <body class="text-gray-900 dark:text-gray-100 flex items-center justify-center min-h-screen p-4">
 
-    <div class="w-full max-w-2xl mx-auto bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl shadow-2xl rounded-2xl p-6 md:p-8">
-        <header class="mb-6 text-center">
-            <h1 class="text-4xl md:text-5xl font-bold gradient-text">Smart To-Do Manager</h1>
-            <p class="text-gray-600 dark:text-gray-300 mt-2">Organize your life with a little help from AI.</p>
-        </header>
+    <!-- Main App Container (Initially empty, populated after setup) -->
+    <div id="app-container" class="w-full max-w-2xl mx-auto">
+    </div>
 
-        <!-- AI Task Suggestion Section -->
-        <div class="mb-6 p-4 border border-purple-200 dark:border-purple-800 bg-purple-50/50 dark:bg-gray-700/50 rounded-xl">
-             <h2 class="text-lg font-semibold mb-2 text-gray-700 dark:text-gray-200">Need some ideas?</h2>
-             <p class="text-sm text-gray-600 dark:text-gray-300 mb-3">Describe a goal, and AI will suggest tasks for you.</p>
-            <div class="flex flex-col sm:flex-row gap-2">
-                <input type="text" id="ai-prompt-input" placeholder="e.g., Plan a weekend trip" class="flex-grow w-full px-4 py-2 bg-white/80 dark:bg-gray-900/80 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
-                <button id="ai-suggest-btn" class="flex items-center justify-center bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300 disabled:opacity-50 transform hover:-translate-y-0.5 shadow-md hover:shadow-xl">
-                    <span id="ai-btn-text">✨ Suggest Tasks</span>
-                    <div id="ai-loading-spinner" class="loading-spinner hidden ml-2"></div>
-                </button>
-            </div>
-        </div>
-        
-        <!-- Add Task Form -->
-        <form id="add-task-form" class="flex flex-col sm:flex-row gap-3 mb-6">
-            <input type="text" id="task-input" placeholder="Add a new task..." required class="flex-grow w-full px-4 py-2 bg-white/80 dark:bg-gray-900/80 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500">
-            <button type="submit" class="bg-gradient-to-r from-teal-400 to-cyan-500 hover:from-teal-500 hover:to-cyan-600 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300 transform hover:-translate-y-0.5 shadow-md hover:shadow-xl">Add Task</button>
-        </form>
-
-        <!-- Task List -->
-        <div id="task-list-container">
-            <div class="flex flex-wrap justify-between items-center border-b border-gray-300 dark:border-gray-600 pb-2 mb-4 gap-2">
-                <h2 class="text-xl font-semibold text-gray-700 dark:text-gray-200">Your Tasks</h2>
-                <div class="flex gap-2">
-                     <button id="prioritize-btn" class="text-sm bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold py-1 px-3 rounded-lg transition-all duration-300 disabled:opacity-50 transform hover:-translate-y-0.5 shadow-md hover:shadow-lg flex items-center gap-2">
-                        <span id="prioritize-btn-text">✨ Prioritize Tasks</span>
-                        <div id="prioritize-loading-spinner" class="loading-spinner-small hidden"></div>
-                    </button>
-                    <button id="summarize-btn" class="text-sm bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-semibold py-1 px-3 rounded-lg transition-all duration-300 disabled:opacity-50 transform hover:-translate-y-0.5 shadow-md hover:shadow-lg flex items-center gap-2">
-                        <span id="summarize-btn-text">✨ Summarize</span>
-                        <div id="summarize-loading-spinner" class="loading-spinner-small hidden"></div>
-                    </button>
+    <!-- API Key Setup Modal -->
+    <div id="setup-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-lg p-6 modal-content">
+            <h3 class="text-xl font-bold gradient-text mb-2">One-Time Setup Required</h3>
+            <p class="text-gray-600 dark:text-gray-300 mb-4 text-sm">To enable AI features and cloud storage, please provide your API keys. They will be saved locally in your browser and will not be shared.</p>
+            
+            <div class="space-y-4">
+                <div>
+                    <label for="gemini-key-input" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Gemini API Key</label>
+                    <input type="password" id="gemini-key-input" placeholder="Enter your Gemini API Key" class="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    <a href="https://aistudio.google.com/" target="_blank" class="text-xs text-purple-500 hover:underline">Get a Gemini Key</a>
+                </div>
+                <div>
+                    <label for="firebase-config-input" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Firebase Config Object</label>
+                    <textarea id="firebase-config-input" rows="6" placeholder="Paste the entire firebaseConfig object here, starting with { and ending with }" class="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg font-mono text-xs focus:outline-none focus:ring-2 focus:ring-purple-500"></textarea>
+                    <a href="https://console.firebase.google.com/" target="_blank" class="text-xs text-purple-500 hover:underline">Get Firebase Config</a>
                 </div>
             </div>
-            <ul id="task-list" class="space-y-3">
-                <!-- Tasks will be dynamically inserted here -->
-            </ul>
-             <p id="no-tasks-message" class="text-center text-gray-500 dark:text-gray-400 py-4 hidden">Your to-do list is empty. Add a task to get started!</p>
-        </div>
-        
-        <!-- Status Message Box -->
-        <div id="status-message" class="fixed bottom-5 right-5 bg-gray-800 text-white py-2 px-4 rounded-lg shadow-lg opacity-0 transition-opacity duration-300 z-50">
-            <!-- Message will be injected here -->
+
+            <div class="mt-6">
+                <button id="save-keys-btn" class="w-full bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300">Save and Start App</button>
+            </div>
         </div>
     </div>
 
-    <!-- Summary Modal -->
-    <div id="summary-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-40 modal-overlay opacity-0 pointer-events-none">
-        <div class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl shadow-xl w-full max-w-lg p-6 modal-content opacity-0 transform scale-95">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-xl font-bold gradient-text">Your Daily Summary</h3>
-                <button id="close-modal-btn" class="text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white text-3xl leading-none">&times;</button>
-            </div>
-            <div id="summary-content" class="text-gray-600 dark:text-gray-300 prose prose-sm max-w-none">
-                <p>Here is your summary...</p>
-            </div>
-        </div>
-    </div>
 
     <script type="module">
         // --- Firebase SDK Imports ---
@@ -145,89 +64,219 @@
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, serverTimestamp, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        import { firebaseConfig, GEMINI_API_KEY } from './config.js';
+        // --- Global Variables ---
+        let firebaseConfig = null;
+        let GEMINI_API_KEY = null;
+        
+        let app, auth, db, userId, tasksCollectionRef, unsubscribeTasks;
+        let currentTasks = [];
 
-        // --- App Initialization ---
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-todo-app';
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+        // --- Setup Modal Elements ---
+        const appContainer = document.getElementById('app-container');
+        const setupModal = document.getElementById('setup-modal');
+        const saveKeysBtn = document.getElementById('save-keys-btn');
+        const geminiKeyInput = document.getElementById('gemini-key-input');
+        const firebaseConfigInput = document.getElementById('firebase-config-input');
 
-        let userId = null;
-        let tasksCollectionRef = null;
-        let unsubscribeTasks = null;
-        let currentTasks = []; // Local cache of tasks
+        // --- Core App Logic ---
+        function checkAndLoadKeys() {
+            const storedFirebaseConfig = localStorage.getItem('firebaseConfig');
+            const storedGeminiKey = localStorage.getItem('GEMINI_API_KEY');
 
-        // --- UI Element References ---
-        const taskList = document.getElementById('task-list');
-        const addTaskForm = document.getElementById('add-task-form');
-        const taskInput = document.getElementById('task-input');
-        const noTasksMessage = document.getElementById('no-tasks-message');
-        const aiPromptInput = document.getElementById('ai-prompt-input');
-        const aiSuggestBtn = document.getElementById('ai-suggest-btn');
-        const aiBtnText = document.getElementById('ai-btn-text');
-        const aiLoadingSpinner = document.getElementById('ai-loading-spinner');
-        const statusMessage = document.getElementById('status-message');
-        const summarizeBtn = document.getElementById('summarize-btn');
-        const summarizeBtnText = document.getElementById('summarize-btn-text');
-        const summarizeLoadingSpinner = document.getElementById('summarize-loading-spinner');
-        const prioritizeBtn = document.getElementById('prioritize-btn');
-        const prioritizeBtnText = document.getElementById('prioritize-btn-text');
-        const prioritizeLoadingSpinner = document.getElementById('prioritize-loading-spinner');
-        const summaryModal = document.getElementById('summary-modal');
-        const summaryContent = document.getElementById('summary-content');
-        const closeModalBtn = document.getElementById('close-modal-btn');
-
-
-        // --- Authentication ---
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                userId = user.uid;
-                const collectionPath = `/artifacts/${appId}/users/${userId}/tasks`;
-                tasksCollectionRef = collection(db, collectionPath);
-                listenForTasks();
+            if (storedFirebaseConfig && storedGeminiKey) {
+                try {
+                    firebaseConfig = JSON.parse(storedFirebaseConfig);
+                    GEMINI_API_KEY = storedGeminiKey;
+                    initializeAppLogic();
+                } catch (e) {
+                    console.error("Failed to parse stored Firebase config. Clearing keys.");
+                    localStorage.clear();
+                    showSetupModal();
+                }
             } else {
-                signInAnonymously(auth).catch((error) => {
-                    console.error("Error signing in anonymously:", error);
-                    showStatusMessage("Error connecting to storage.", "error");
-                });
+                showSetupModal();
             }
-        });
+        }
+
+        function showSetupModal() {
+            setupModal.classList.remove('hidden');
+        }
+
+        function saveKeysAndInitialize() {
+            const geminiKey = geminiKeyInput.value.trim();
+            let firebaseConfigStr = firebaseConfigInput.value.trim();
+
+            if (!geminiKey || !firebaseConfigStr) {
+                alert("Please provide both the Gemini API Key and the Firebase Config object.");
+                return;
+            }
+
+            try {
+                // This logic safely converts the JavaScript object string from Firebase into a valid JSON object.
+                let configObject;
+                // Ensure it starts with { and ends with }, removing variable assignment if present.
+                const startIndex = firebaseConfigStr.indexOf('{');
+                const endIndex = firebaseConfigStr.lastIndexOf('}');
+                if (startIndex === -1 || endIndex === -1) {
+                    throw new Error("Invalid format. Please paste the entire object, starting with { and ending with }.");
+                }
+                firebaseConfigStr = firebaseConfigStr.substring(startIndex, endIndex + 1);
+
+                // Use the Function constructor as a safer alternative to eval() to parse the object string.
+                configObject = new Function(`return ${firebaseConfigStr}`)();
+
+                if (!configObject.apiKey || !configObject.projectId) {
+                    throw new Error("Firebase config appears to be invalid. Missing 'apiKey' or 'projectId'.");
+                }
+                
+                localStorage.setItem('firebaseConfig', JSON.stringify(configObject));
+                localStorage.setItem('GEMINI_API_KEY', geminiKey);
+                
+                setupModal.classList.add('hidden');
+                checkAndLoadKeys();
+            } catch (error) {
+                alert(`The Firebase Config is not valid. Please paste the object from the Firebase console. Error: ${error.message}`);
+                console.error(error);
+            }
+        }
+
+        function initializeAppLogic() {
+            injectAppHTML();
+            
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    userId = user.uid;
+                    const appId = 'default-todo-app';
+                    tasksCollectionRef = collection(db, `/artifacts/${appId}/users/${userId}/tasks`);
+                    listenForTasks();
+                } else {
+                    signInAnonymously(auth).catch((error) => console.error("Anonymous sign-in failed:", error));
+                }
+            });
+            
+            attachEventListeners();
+        }
+        
+        // --- HTML Injection ---
+        function injectAppHTML() {
+            appContainer.innerHTML = `
+            <div class="w-full max-w-2xl mx-auto bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl shadow-2xl rounded-2xl p-6 md:p-8">
+                <header class="mb-6 text-center">
+                    <h1 class="text-4xl md:text-5xl font-bold gradient-text">Smart To-Do Manager</h1>
+                    <p class="text-gray-600 dark:text-gray-300 mt-2">Organize your life with a little help from AI.</p>
+                </header>
+
+                <div class="mb-6 p-4 border border-purple-200 dark:border-purple-800 bg-purple-50/50 dark:bg-gray-700/50 rounded-xl">
+                    <h2 class="text-lg font-semibold mb-2 text-gray-700 dark:text-gray-200">Need some ideas?</h2>
+                    <p class="text-sm text-gray-600 dark:text-gray-300 mb-3">Describe a goal, and AI will suggest tasks for you.</p>
+                    <div class="flex flex-col sm:flex-row gap-2">
+                        <input type="text" id="ai-prompt-input" placeholder="e.g., Plan a weekend trip" class="flex-grow w-full px-4 py-2 bg-white/80 dark:bg-gray-900/80 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        <button id="ai-suggest-btn" class="flex items-center justify-center bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300 disabled:opacity-50 transform hover:-translate-y-0.5 shadow-md hover:shadow-xl">
+                            <span id="ai-btn-text">✨ Suggest Tasks</span>
+                            <div id="ai-loading-spinner" class="loading-spinner hidden ml-2"></div>
+                        </button>
+                    </div>
+                </div>
+                
+                <form id="add-task-form" class="flex flex-col sm:flex-row gap-3 mb-6">
+                    <input type="text" id="task-input" placeholder="Add a new task..." required class="flex-grow w-full px-4 py-2 bg-white/80 dark:bg-gray-900/80 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500">
+                    <button type="submit" class="bg-gradient-to-r from-teal-400 to-cyan-500 hover:from-teal-500 hover:to-cyan-600 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300 transform hover:-translate-y-0.5 shadow-md hover:shadow-xl">Add Task</button>
+                </form>
+
+                <div id="task-list-container">
+                    <div class="flex flex-wrap justify-between items-center border-b border-gray-300 dark:border-gray-600 pb-2 mb-4 gap-2">
+                        <h2 class="text-xl font-semibold text-gray-700 dark:text-gray-200">Your Tasks</h2>
+                        <div class="flex gap-2">
+                            <button id="prioritize-btn" class="text-sm bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold py-1 px-3 rounded-lg transition-all duration-300 disabled:opacity-50 transform hover:-translate-y-0.5 shadow-md hover:shadow-lg flex items-center gap-2">
+                                <span id="prioritize-btn-text">✨ Prioritize</span>
+                                <div id="prioritize-loading-spinner" class="loading-spinner-small hidden"></div>
+                            </button>
+                            <button id="summarize-btn" class="text-sm bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-semibold py-1 px-3 rounded-lg transition-all duration-300 disabled:opacity-50 transform hover:-translate-y-0.5 shadow-md hover:shadow-lg flex items-center gap-2">
+                                <span id="summarize-btn-text">✨ Summarize</span>
+                                <div id="summarize-loading-spinner" class="loading-spinner-small hidden"></div>
+                            </button>
+                        </div>
+                    </div>
+                    <ul id="task-list" class="space-y-3"></ul>
+                    <p id="no-tasks-message" class="text-center text-gray-500 dark:text-gray-400 py-4 hidden">Your to-do list is empty.</p>
+                </div>
+            </div>
+
+            <div id="status-message" class="fixed bottom-5 right-5 bg-gray-800 text-white py-2 px-4 rounded-lg shadow-lg opacity-0 transition-opacity duration-300 z-50"></div>
+            
+            <div id="summary-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-40 modal-overlay opacity-0 pointer-events-none">
+                <div class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl shadow-xl w-full max-w-lg p-6 modal-content opacity-0 transform scale-95">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-bold gradient-text">Your Daily Summary</h3>
+                        <button id="close-modal-btn" class="text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white text-3xl leading-none">&times;</button>
+                    </div>
+                    <div id="summary-content" class="text-gray-600 dark:text-gray-300 prose prose-sm max-w-none"></div>
+                </div>
+            </div>`;
+        }
+
+        // --- Event Listeners ---
+        function attachEventListeners() {
+            const addTaskForm = document.getElementById('add-task-form');
+            const taskInput = document.getElementById('task-input');
+            const aiSuggestBtn = document.getElementById('ai-suggest-btn');
+            const aiPromptInput = document.getElementById('ai-prompt-input');
+            const summarizeBtn = document.getElementById('summarize-btn');
+            const prioritizeBtn = document.getElementById('prioritize-btn');
+            const summaryModal = document.getElementById('summary-modal');
+            const closeModalBtn = document.getElementById('close-modal-btn');
+            
+            addTaskForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const taskText = taskInput.value.trim();
+                if (taskText) {
+                    addTask(taskText);
+                    taskInput.value = '';
+                }
+            });
+
+            aiSuggestBtn.addEventListener('click', handleAiSuggest);
+            summarizeBtn.addEventListener('click', handleSummarize);
+            prioritizeBtn.addEventListener('click', handlePrioritize);
+            
+            closeModalBtn.addEventListener('click', () => toggleModal(false));
+            summaryModal.addEventListener('click', (e) => {
+                if (e.target === summaryModal) toggleModal(false);
+            });
+        }
 
         // --- Firestore Real-time Listener ---
         function listenForTasks() {
             if (unsubscribeTasks) unsubscribeTasks(); 
-            const q = query(collection(db, `/artifacts/${appId}/users/${userId}/tasks`));
-
+            const q = query(tasksCollectionRef);
             unsubscribeTasks = onSnapshot(q, (snapshot) => {
                 const tasks = [];
-                snapshot.forEach((doc) => {
-                    tasks.push({ id: doc.id, ...doc.data() });
-                });
+                snapshot.forEach((doc) => tasks.push({ id: doc.id, ...doc.data() }));
                 tasks.sort((a, b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0));
-                currentTasks = tasks; // Update local cache
+                currentTasks = tasks;
                 renderTasks(tasks);
-            }, (error) => {
-                console.error("Error fetching tasks:", error);
-                showStatusMessage("Could not fetch tasks.", "error");
-            });
+            }, (error) => console.error("Error fetching tasks:", error));
         }
 
         // --- UI Rendering ---
         function renderTasks(tasks) {
+            const taskList = document.getElementById('task-list');
+            const noTasksMessage = document.getElementById('no-tasks-message');
             taskList.innerHTML = '';
+            
             const incompleteTasks = tasks.filter(t => !t.completed);
-            summarizeBtn.disabled = incompleteTasks.length === 0;
-            prioritizeBtn.disabled = incompleteTasks.length < 2;
+            document.getElementById('summarize-btn').disabled = incompleteTasks.length === 0;
+            document.getElementById('prioritize-btn').disabled = incompleteTasks.length < 2;
             
             if (tasks.length === 0) {
                 noTasksMessage.classList.remove('hidden');
             } else {
                 noTasksMessage.classList.add('hidden');
-                tasks.forEach(task => {
-                    const taskElement = createTaskElement(task);
-                    taskList.appendChild(taskElement);
-                });
+                tasks.forEach(task => taskList.appendChild(createTaskElement(task)));
             }
         }
 
@@ -237,7 +286,7 @@
             li.className = `task-item flex items-center justify-between p-3 bg-white/60 dark:bg-gray-700/50 shadow-md rounded-lg border-l-4 border-transparent hover:border-purple-500 ${task.completed ? 'completed' : ''}`;
             
             const contentWrapper = document.createElement('div');
-            contentWrapper.className = 'flex items-center flex-grow min-w-0'; // Added min-w-0 for flex truncation
+            contentWrapper.className = 'flex items-center flex-grow min-w-0';
 
             if (task.priority) {
                 const priorityBadge = document.createElement('span');
@@ -248,14 +297,14 @@
 
             const textSpan = document.createElement('span');
             textSpan.textContent = task.text;
-            textSpan.className = `flex-grow cursor-pointer truncate`;
+            textSpan.className = 'flex-grow cursor-pointer truncate';
             textSpan.addEventListener('click', () => toggleTaskCompletion(task.id, task.completed));
             contentWrapper.appendChild(textSpan);
 
             const buttonContainer = document.createElement('div');
             buttonContainer.className = 'flex items-center space-x-1 ml-2 flex-shrink-0';
 
-            const breakdownButton = createButton('✨', 'Break Down Task', () => breakDownTask(task.id, task.text), 'text-yellow-500 text-lg');
+            const breakdownButton = createButton('✨', 'Break Down Task', () => handleBreakdown(task.id, task.text), 'text-yellow-500 text-lg');
             if (task.completed) breakdownButton.disabled = true;
 
             const deleteButton = createButton('🗑️', 'Delete', () => deleteTask(task.id), 'text-red-400 hover:text-red-500 text-lg');
@@ -264,8 +313,135 @@
             buttonContainer.appendChild(deleteButton);
             li.appendChild(contentWrapper);
             li.appendChild(buttonContainer);
-
             return li;
+        }
+
+        // --- CRUD Operations ---
+        async function addTask(text) {
+            try {
+                await addDoc(tasksCollectionRef, { text, completed: false, createdAt: serverTimestamp(), priority: null });
+                showStatusMessage("Task added!", "success");
+            } catch (e) { console.error("Error adding task:", e); showStatusMessage("Failed to add task.", "error"); }
+        }
+
+        async function toggleTaskCompletion(id, currentStatus) {
+            const taskDocRef = doc(db, tasksCollectionRef.path, id);
+            try { await updateDoc(taskDocRef, { completed: !currentStatus }); } catch (e) { console.error("Error updating task:", e); }
+        }
+
+        async function deleteTask(id) {
+            const taskDocRef = doc(db, tasksCollectionRef.path, id);
+            try { await deleteDoc(taskDocRef); showStatusMessage("Task deleted.", "success"); } catch (e) { console.error("Error deleting task:", e); }
+        }
+
+        // --- AI Feature Handlers ---
+        async function handleAiSuggest() {
+            const aiPromptInput = document.getElementById('ai-prompt-input');
+            const prompt = aiPromptInput.value.trim();
+            if (!prompt) return showStatusMessage("Please enter a goal.", "error");
+
+            const btn = document.getElementById('ai-suggest-btn'), textEl = document.getElementById('ai-btn-text'), spinnerEl = document.getElementById('ai-loading-spinner');
+            setElementLoading(btn, textEl, spinnerEl, true, 'Generating...');
+            
+            const result = await callGemini(`Based on the goal "${prompt}", generate a short list of 3-5 actionable to-do items.`, { type: "OBJECT", properties: { tasks: { type: "ARRAY", items: { type: "STRING" } } } });
+            
+            setElementLoading(btn, textEl, spinnerEl, false, '✨ Suggest Tasks');
+            if (result?.tasks?.length > 0) {
+                for (const taskText of result.tasks) { await addTask(taskText); }
+                aiPromptInput.value = '';
+            } else { showStatusMessage("AI couldn't suggest tasks for that.", "error"); }
+        }
+
+        async function handleBreakdown(taskId, taskText) {
+            const taskElement = document.querySelector(`li[data-id="${taskId}"]`);
+            const originalButton = taskElement.querySelector('button[aria-label="Break Down Task"]');
+            const spinner = document.createElement('div');
+            spinner.className = 'loading-spinner-small';
+            originalButton.innerHTML = '';
+            originalButton.appendChild(spinner);
+            originalButton.disabled = true;
+
+            const result = await callGemini(`Break down the following task into smaller, actionable steps: "${taskText}". Do not include the original task in the steps.`, { type: "OBJECT", properties: { tasks: { type: "ARRAY", items: { type: "STRING" } } } });
+
+            if (result?.tasks?.length > 0) {
+                for (const text of result.tasks) { await addTask(text); }
+                await deleteTask(taskId);
+                showStatusMessage(`"${taskText}" was broken down.`, "success");
+            } else {
+                showStatusMessage("AI couldn't break down this task.", "error");
+                originalButton.innerHTML = '✨';
+                originalButton.disabled = false;
+            }
+        }
+        
+        async function handleSummarize() {
+            const incompleteTasks = currentTasks.filter(t => !t.completed).map(t => t.text);
+            if (incompleteTasks.length === 0) return;
+            
+            const btn = document.getElementById('summarize-btn'), textEl = document.getElementById('summarize-btn-text'), spinnerEl = document.getElementById('summarize-loading-spinner');
+            setElementLoading(btn, textEl, spinnerEl, true, 'Summarizing...');
+
+            const summary = await callGemini(`Summarize the following to-do list in a concise paragraph: ${incompleteTasks.join(', ')}`);
+            
+            setElementLoading(btn, textEl, spinnerEl, false, '✨ Summarize');
+            if (summary) {
+                document.getElementById('summary-content').innerHTML = `<p>${summary.replace(/\n/g, '<br>')}</p>`;
+                toggleModal(true);
+            } else { showStatusMessage("AI couldn't generate a summary.", "error"); }
+        }
+
+        async function handlePrioritize() {
+            const incompleteTasks = currentTasks.filter(t => !t.completed);
+            if (incompleteTasks.length < 2) return;
+            
+            const btn = document.getElementById('prioritize-btn'), textEl = document.getElementById('prioritize-btn-text'), spinnerEl = document.getElementById('prioritize-loading-spinner');
+            setElementLoading(btn, textEl, spinnerEl, true, 'Prioritizing...');
+
+            const result = await callGemini(`Analyze the following tasks and assign a priority to each. Priority must be one of: "High", "Medium", or "Low". Tasks: [${incompleteTasks.map(t=>t.text).join(', ')}]`, { type: "OBJECT", properties: { prioritizedTasks: { type: "ARRAY", items: { type: "OBJECT", properties: { taskText: {type: "STRING"}, priority: {type: "STRING"}}}}}});
+            
+            setElementLoading(btn, textEl, spinnerEl, false, '✨ Prioritize');
+            if (result?.prioritizedTasks?.length > 0) {
+                 for (const pTask of result.prioritizedTasks) {
+                    const originalTask = incompleteTasks.find(t => t.text === pTask.taskText);
+                    if (originalTask) {
+                        const taskDocRef = doc(db, tasksCollectionRef.path, originalTask.id);
+                        await updateDoc(taskDocRef, { priority: pTask.priority });
+                    }
+                }
+                showStatusMessage("Tasks prioritized!", "success");
+            } else { showStatusMessage("AI couldn't prioritize tasks.", "error"); }
+        }
+
+        // --- Generic Gemini API Caller ---
+        async function callGemini(prompt, schema = null) {
+            if (!GEMINI_API_KEY) { console.error("Gemini API Key is missing."); return null; }
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${GEMINI_API_KEY}`;
+            const payload = { contents: [{ parts: [{ text: prompt }] }] };
+            if (schema) {
+                payload.generationConfig = { responseMimeType: "application/json", responseSchema: schema };
+            }
+
+            try {
+                const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                if (!response.ok) throw new Error(`API request failed with status ${response.status}`);
+                const result = await response.json();
+                const part = result.candidates?.[0]?.content?.parts?.[0];
+                if (!part) throw new Error("Invalid response structure from API.");
+                return schema ? JSON.parse(part.text) : part.text;
+            } catch (error) {
+                console.error("Gemini API call error:", error);
+                return null;
+            }
+        }
+
+        // --- Utility Functions ---
+        function createButton(text, ariaLabel, onClick, extraClasses = '') {
+            const button = document.createElement('button');
+            button.innerHTML = text;
+            button.setAttribute('aria-label', ariaLabel);
+            button.className = `p-2 rounded-full hover:bg-gray-200/50 dark:hover:bg-gray-600/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${extraClasses}`;
+            button.addEventListener('click', onClick);
+            return button;
         }
 
         function getPriorityClasses(priority) {
@@ -277,208 +453,6 @@
             }
         }
 
-        function createButton(text, ariaLabel, onClick, extraClasses = '') {
-            const button = document.createElement('button');
-            button.innerHTML = text;
-            button.setAttribute('aria-label', ariaLabel);
-            button.className = `p-2 rounded-full hover:bg-gray-200/50 dark:hover:bg-gray-600/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${extraClasses}`;
-            button.addEventListener('click', onClick);
-            return button;
-        }
-        
-        // --- CRUD Operations ---
-        async function addTask(text) {
-            if (!userId || !tasksCollectionRef) {
-                 showStatusMessage("Not connected.", "error");
-                 return;
-            }
-            try {
-                await addDoc(tasksCollectionRef, {
-                    text: text,
-                    completed: false,
-                    createdAt: serverTimestamp(),
-                    priority: null
-                });
-                showStatusMessage("Task added successfully!", "success");
-            } catch (error) {
-                console.error("Error adding document: ", error);
-                showStatusMessage("Failed to add task.", "error");
-            }
-        }
-
-        async function toggleTaskCompletion(id, currentStatus) {
-            if (!userId) return;
-            const taskDocRef = doc(db, `/artifacts/${appId}/users/${userId}/tasks`, id);
-            try {
-                await updateDoc(taskDocRef, { completed: !currentStatus });
-            } catch (error) {
-                console.error("Error updating task status: ", error);
-                showStatusMessage("Failed to update task.", "error");
-            }
-        }
-
-        async function deleteTask(id) {
-            if (!userId) return;
-            const taskDocRef = doc(db, `/artifacts/${appId}/users/${userId}/tasks`, id);
-            try {
-                await deleteDoc(taskDocRef);
-                showStatusMessage("Task deleted.", "success");
-            } catch (error) {
-                console.error("Error deleting document: ", error);
-                showStatusMessage("Failed to delete task.", "error");
-            }
-        }
-
-        // --- Event Listeners ---
-        addTaskForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const taskText = taskInput.value.trim();
-            if (taskText) {
-                addTask(taskText);
-                taskInput.value = '';
-            }
-        });
-        
-        closeModalBtn.addEventListener('click', () => toggleModal(false));
-        summaryModal.addEventListener('click', (e) => {
-            if (e.target === summaryModal) toggleModal(false);
-        });
-
-        // --- AI Features ---
-
-        // Suggest new tasks based on a goal
-        aiSuggestBtn.addEventListener('click', async () => {
-            const prompt = aiPromptInput.value.trim();
-            if (!prompt) return showStatusMessage("Please enter a goal for the AI.", "error");
-
-            setElementLoading(aiSuggestBtn, aiBtnText, aiLoadingSpinner, true, 'Generating...');
-            const suggestedTasks = await callGemini(
-                `Based on the goal "${prompt}", generate a short list of 3-5 actionable to-do items.`,
-                { type: "OBJECT", properties: { tasks: { type: "ARRAY", items: { type: "STRING" } } } }
-            );
-            setElementLoading(aiSuggestBtn, aiBtnText, aiLoadingSpinner, false, '✨ Suggest Tasks');
-
-            if (suggestedTasks?.tasks?.length > 0) {
-                for (const taskText of suggestedTasks.tasks) { await addTask(taskText); }
-                showStatusMessage("AI tasks added!", "success");
-                aiPromptInput.value = '';
-            } else {
-                showStatusMessage("AI couldn't suggest tasks for that.", "error");
-            }
-        });
-        
-        // Break down a single task into sub-tasks
-        async function breakDownTask(taskId, taskText) {
-            const taskElement = document.querySelector(`li[data-id="${taskId}"]`);
-            if (!taskElement) return;
-
-            const originalButton = taskElement.querySelector('button[aria-label="Break Down Task"]');
-            const spinner = document.createElement('div');
-            spinner.className = 'loading-spinner-small';
-            originalButton.innerHTML = '';
-            originalButton.appendChild(spinner);
-            originalButton.disabled = true;
-
-            const subTasks = await callGemini(
-                `Break down the following task into smaller, actionable steps: "${taskText}". Do not include the original task in the steps.`,
-                 { type: "OBJECT", properties: { tasks: { type: "ARRAY", items: { type: "STRING" } } } }
-            );
-
-            if (subTasks?.tasks?.length > 0) {
-                for (const text of subTasks.tasks) { await addTask(text); }
-                await deleteTask(taskId);
-                showStatusMessage(`"${taskText}" was broken down.`, "success");
-            } else {
-                showStatusMessage("AI couldn't break down this task.", "error");
-                originalButton.innerHTML = '✨';
-                originalButton.disabled = false;
-            }
-        }
-
-        // Summarize all incomplete tasks
-        summarizeBtn.addEventListener('click', async () => {
-            const incompleteTasks = currentTasks.filter(task => !task.completed).map(task => task.text);
-            if (incompleteTasks.length === 0) return showStatusMessage("No pending tasks to summarize.", "info");
-
-            setElementLoading(summarizeBtn, summarizeBtnText, summarizeLoadingSpinner, true, 'Summarizing...');
-            const summary = await callGemini(`Summarize the following to-do list in a concise paragraph for a daily briefing: ${incompleteTasks.join(', ')}`);
-            setElementLoading(summarizeBtn, summarizeBtnText, summarizeLoadingSpinner, false, '✨ Summarize');
-            
-            if (summary) {
-                summaryContent.innerHTML = `<p>${summary.replace(/\n/g, '<br>')}</p>`;
-                toggleModal(true);
-            } else {
-                showStatusMessage("AI couldn't generate a summary.", "error");
-            }
-        });
-
-        // Prioritize all incomplete tasks
-        prioritizeBtn.addEventListener('click', async () => {
-            const incompleteTasks = currentTasks.filter(task => !task.completed);
-            if (incompleteTasks.length < 2) return showStatusMessage("Need at least two tasks to prioritize.", "info");
-
-            const taskTexts = incompleteTasks.map(task => task.text);
-            
-            setElementLoading(prioritizeBtn, prioritizeBtnText, prioritizeLoadingSpinner, true, 'Prioritizing...');
-            const result = await callGemini(
-                `As a productivity expert, analyze the following list of tasks and assign a priority to each. The priority must be one of: "High", "Medium", or "Low". Tasks: [${taskTexts.join(', ')}]`,
-                 { type: "OBJECT", properties: { prioritizedTasks: { type: "ARRAY", items: { type: "OBJECT", properties: { taskText: {type: "STRING"}, priority: {type: "STRING"}}}}}}
-            );
-            setElementLoading(prioritizeBtn, prioritizeBtnText, prioritizeLoadingSpinner, false, '✨ Prioritize Tasks');
-
-            if (result?.prioritizedTasks?.length > 0) {
-                 for (const pTask of result.prioritizedTasks) {
-                    const originalTask = incompleteTasks.find(t => t.text === pTask.taskText);
-                    if (originalTask) {
-                        const taskDocRef = doc(db, `/artifacts/${appId}/users/${userId}/tasks`, originalTask.id);
-                        await updateDoc(taskDocRef, { priority: pTask.priority });
-                    }
-                }
-                showStatusMessage("Tasks have been prioritized!", "success");
-            } else {
-                 showStatusMessage("AI couldn't prioritize tasks.", "error");
-            }
-        });
-
-
-        // --- Generic Gemini API Caller ---
-        async function callGemini(prompt, schema = null) {
-            if (!GEMINI_API_KEY) {
-                showStatusMessage("Gemini API key is missing.", "error");
-                console.error("Gemini API key is not set.");
-                return null;
-            }
-
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${GEMINI_API_KEY}`;
-
-            const payload = { contents: [{ parts: [{ text: prompt }] }] };
-            if (schema) {
-                payload.generationConfig = {
-                    responseMimeType: "application/json",
-                    responseSchema: schema
-                };
-            }
-
-            try {
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                if (!response.ok) throw new Error(`API request failed with status ${response.status}`);
-                const result = await response.json();
-                const part = result.candidates?.[0]?.content?.parts?.[0];
-                if (!part) throw new Error("Invalid response structure from API.");
-                
-                return schema ? JSON.parse(part.text) : part.text;
-
-            } catch (error) {
-                console.error("Error with Gemini API call:", error);
-                return null;
-            }
-        }
-
-        // --- Utility Functions ---
         function setElementLoading(btn, textEl, spinnerEl, isLoading, text) {
             btn.disabled = isLoading;
             textEl.textContent = text;
@@ -486,6 +460,7 @@
         }
         
         function toggleModal(show) {
+            const summaryModal = document.getElementById('summary-modal');
             if (show) {
                 summaryModal.classList.remove('pointer-events-none', 'opacity-0');
                 summaryModal.querySelector('.modal-content').classList.remove('opacity-0', 'scale-95');
@@ -498,17 +473,23 @@
 
         let messageTimeout;
         function showStatusMessage(message, type = 'info') {
+            const statusMessage = document.getElementById('status-message');
+            if (!statusMessage) return;
             statusMessage.textContent = message;
-            statusMessage.classList.remove('bg-red-500', 'bg-green-500', 'bg-gray-800', 'bg-blue-500');
+            statusMessage.className = 'fixed bottom-5 right-5 text-white py-2 px-4 rounded-lg shadow-lg transition-opacity duration-300 z-50'; // Reset classes
             if (type === 'error') statusMessage.classList.add('bg-red-500');
             else if (type === 'success') statusMessage.classList.add('bg-green-500');
-            else if (type === 'info') statusMessage.classList.add('bg-blue-500');
-            else statusMessage.classList.add('bg-gray-800');
+            else statusMessage.classList.add('bg-blue-500');
             
             statusMessage.classList.remove('opacity-0');
             clearTimeout(messageTimeout);
             messageTimeout = setTimeout(() => statusMessage.classList.add('opacity-0'), 3000);
         }
+        
+        // --- Start the app ---
+        document.addEventListener('DOMContentLoaded', checkAndLoadKeys);
+        saveKeysBtn.addEventListener('click', saveKeysAndInitialize);
+
     </script>
 </body>
 </html>
