@@ -31,7 +31,7 @@ To run this project locally or deploy it yourself, follow these steps.
 ### **Local Setup**
 
 1. **Clone the repository:**  
-   git clone \[https://github.com/YOUR\_USERNAME/smart-todo-manager.git\](https://github.com/YOUR\_USERNAME/smart-todo-manager.git)  
+   git clone \[https://github.com/varunk14/smart-todo-manager.git\](https://github.com/varunk14/smart-todo-manager.git)  
    cd smart-todo-manager
 
 2. **Create your configuration file:**  
