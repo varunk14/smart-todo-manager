@@ -145,19 +145,7 @@
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, serverTimestamp, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // --- IMPORTANT: PASTE YOUR KEYS HERE ---
-        // 1. Get a Firebase config object from your Firebase project settings.
-        const firebaseConfig = { 
-            apiKey: "AIzaSyBkF81HqqjSDe2TMfjL13DaVZ5z_U51osk",
-            authDomain: "my-todo-app-5a9d2.firebaseapp.com",
-            projectId: "my-todo-app-5a9d2",
-            storageBucket: "my-todo-app-5a9d2.appspot.com",
-            messagingSenderId: "117324078585",
-            appId: "1:117324078585:web:875907f897b8e9f90bb128",
-            measurementId: "G-0W6MPY66LG" 
-        };
-        // 2. Get a Gemini API key from Google AI Studio.
-        const GEMINI_API_KEY = "AIzaSyA7ah0fhU6qxRUg4oeEL4UHYuP2B7zWV5g"; // <-- PASTE YOUR GEMINI API KEY HERE
+        import { firebaseConfig, GEMINI_API_KEY } from './config.js';
 
         // --- App Initialization ---
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-todo-app';
