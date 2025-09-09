@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart To-Do Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(-45deg, #6B21A8, #2563EB, #10B981, #F59E0B);
+            background-size: 400% 400%;
+            animation: gradient-animation 18s ease infinite;
+        }
+
+        @keyframes gradient-animation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .gradient-text {
+            background: -webkit-linear-gradient(45deg, #4f46e5, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .dark .gradient-text {
+            background: -webkit-linear-gradient(45deg, #a5b4fc, #f0abfc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        /* Custom styles for a subtle animation on task items */
+        .task-item {
+            transition: all 0.2s ease-in-out;
+        }
+        .task-item:hover {
+            transform: scale(1.02) translateX(4px);
+        }
+        .task-item.completed > div > span {
+            text-decoration: line-through;
+            color: #9ca3af; /* gray-400 */
+        }
+        .loading-spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #ffffff;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        .loading-spinner-small {
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid #ffffff;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        /* Modal styles */
+        .modal-overlay {
+            transition: opacity 0.3s ease;
+        }
+        .modal-content {
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+    </style>
+</head>
+<body class="text-gray-900 dark:text-gray-100 flex items-center justify-center min-h-screen p-4">
+
+    <div class="w-full max-w-2xl mx-auto bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl shadow-2xl rounded-2xl p-6 md:p-8">
+        <header class="mb-6 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold gradient-text">Smart To-Do Manager</h1>
+            <p class="text-gray-600 dark:text-gray-300 mt-2">Organize your life with a little help from AI.</p>
+        </header>
+
+        <!-- AI Task Suggestion Section -->
+        <div class="mb-6 p-4 border border-purple-200 dark:border-purple-800 bg-purple-50/50 dark:bg-gray-700/50 rounded-xl">
+             <h2 class="text-lg font-semibold mb-2 text-gray-700 dark:text-gray-200">Need some ideas?</h2>
+             <p class="text-sm text-gray-600 dark:text-gray-300 mb-3">Describe a goal, and AI will suggest tasks for you.</p>
+            <div class="flex flex-col sm:flex-row gap-2">
+                <input type="text" id="ai-prompt-input" placeholder="e.g., Plan a weekend trip" class="flex-grow w-full px-4 py-2 bg-white/80 dark:bg-gray-900/80 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                <button id="ai-suggest-btn" class="flex items-center justify-center bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300 disabled:opacity-50 transform hover:-translate-y-0.5 shadow-md hover:shadow-xl">
+                    <span id="ai-btn-text">✨ Suggest Tasks</span>
+                    <div id="ai-loading-spinner" class="loading-spinner hidden ml-2"></div>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Add Task Form -->
+        <form id="add-task-form" class="flex flex-col sm:flex-row gap-3 mb-6">
+            <input type="text" id="task-input" placeholder="Add a new task..." required class="flex-grow w-full px-4 py-2 bg-white/80 dark:bg-gray-900/80 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500">
+            <button type="submit" class="bg-gradient-to-r from-teal-400 to-cyan-500 hover:from-teal-500 hover:to-cyan-600 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300 transform hover:-translate-y-0.5 shadow-md hover:shadow-xl">Add Task</button>
+        </form>
+
+        <!-- Task List -->
+        <div id="task-list-container">
+            <div class="flex flex-wrap justify-between items-center border-b border-gray-300 dark:border-gray-600 pb-2 mb-4 gap-2">
+                <h2 class="text-xl font-semibold text-gray-700 dark:text-gray-200">Your Tasks</h2>
+                <div class="flex gap-2">
+                     <button id="prioritize-btn" class="text-sm bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold py-1 px-3 rounded-lg transition-all duration-300 disabled:opacity-50 transform hover:-translate-y-0.5 shadow-md hover:shadow-lg flex items-center gap-2">
+                        <span id="prioritize-btn-text">✨ Prioritize Tasks</span>
+                        <div id="prioritize-loading-spinner" class="loading-spinner-small hidden"></div>
+                    </button>
+                    <button id="summarize-btn" class="text-sm bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-semibold py-1 px-3 rounded-lg transition-all duration-300 disabled:opacity-50 transform hover:-translate-y-0.5 shadow-md hover:shadow-lg flex items-center gap-2">
+                        <span id="summarize-btn-text">✨ Summarize</span>
+                        <div id="summarize-loading-spinner" class="loading-spinner-small hidden"></div>
+                    </button>
+                </div>
+            </div>
+            <ul id="task-list" class="space-y-3">
+                <!-- Tasks will be dynamically inserted here -->
+            </ul>
+             <p id="no-tasks-message" class="text-center text-gray-500 dark:text-gray-400 py-4 hidden">Your to-do list is empty. Add a task to get started!</p>
+        </div>
+        
+        <!-- Status Message Box -->
+        <div id="status-message" class="fixed bottom-5 right-5 bg-gray-800 text-white py-2 px-4 rounded-lg shadow-lg opacity-0 transition-opacity duration-300 z-50">
+            <!-- Message will be injected here -->
+        </div>
+    </div>
+
+    <!-- Summary Modal -->
+    <div id="summary-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-40 modal-overlay opacity-0 pointer-events-none">
+        <div class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl shadow-xl w-full max-w-lg p-6 modal-content opacity-0 transform scale-95">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold gradient-text">Your Daily Summary</h3>
+                <button id="close-modal-btn" class="text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white text-3xl leading-none">&times;</button>
+            </div>
+            <div id="summary-content" class="text-gray-600 dark:text-gray-300 prose prose-sm max-w-none">
+                <p>Here is your summary...</p>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        // --- Firebase SDK Imports ---
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, serverTimestamp, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- IMPORTANT: PASTE YOUR KEYS HERE ---
+        // 1. Get a Firebase config object from your Firebase project settings.
+        const firebaseConfig = { 
+            apiKey: "AIzaSyBkF81HqqjSDe2TMfjL13DaVZ5z_U51osk",
+            authDomain: "my-todo-app-5a9d2.firebaseapp.com",
+            projectId: "my-todo-app-5a9d2",
+            storageBucket: "my-todo-app-5a9d2.appspot.com",
+            messagingSenderId: "117324078585",
+            appId: "1:117324078585:web:875907f897b8e9f90bb128",
+            measurementId: "G-0W6MPY66LG" 
+        };
+        // 2. Get a Gemini API key from Google AI Studio.
+        const GEMINI_API_KEY = "AIzaSyA7ah0fhU6qxRUg4oeEL4UHYuP2B7zWV5g"; // <-- PASTE YOUR GEMINI API KEY HERE
+
+        // --- App Initialization ---
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-todo-app';
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let userId = null;
+        let tasksCollectionRef = null;
+        let unsubscribeTasks = null;
+        let currentTasks = []; // Local cache of tasks
+
+        // --- UI Element References ---
+        const taskList = document.getElementById('task-list');
+        const addTaskForm = document.getElementById('add-task-form');
+        const taskInput = document.getElementById('task-input');
+        const noTasksMessage = document.getElementById('no-tasks-message');
+        const aiPromptInput = document.getElementById('ai-prompt-input');
+        const aiSuggestBtn = document.getElementById('ai-suggest-btn');
+        const aiBtnText = document.getElementById('ai-btn-text');
+        const aiLoadingSpinner = document.getElementById('ai-loading-spinner');
+        const statusMessage = document.getElementById('status-message');
+        const summarizeBtn = document.getElementById('summarize-btn');
+        const summarizeBtnText = document.getElementById('summarize-btn-text');
+        const summarizeLoadingSpinner = document.getElementById('summarize-loading-spinner');
+        const prioritizeBtn = document.getElementById('prioritize-btn');
+        const prioritizeBtnText = document.getElementById('prioritize-btn-text');
+        const prioritizeLoadingSpinner = document.getElementById('prioritize-loading-spinner');
+        const summaryModal = document.getElementById('summary-modal');
+        const summaryContent = document.getElementById('summary-content');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+
+
+        // --- Authentication ---
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                userId = user.uid;
+                const collectionPath = `/artifacts/${appId}/users/${userId}/tasks`;
+                tasksCollectionRef = collection(db, collectionPath);
+                listenForTasks();
+            } else {
+                signInAnonymously(auth).catch((error) => {
+                    console.error("Error signing in anonymously:", error);
+                    showStatusMessage("Error connecting to storage.", "error");
+                });
+            }
+        });
+
+        // --- Firestore Real-time Listener ---
+        function listenForTasks() {
+            if (unsubscribeTasks) unsubscribeTasks(); 
+            const q = query(collection(db, `/artifacts/${appId}/users/${userId}/tasks`));
+
+            unsubscribeTasks = onSnapshot(q, (snapshot) => {
+                const tasks = [];
+                snapshot.forEach((doc) => {
+                    tasks.push({ id: doc.id, ...doc.data() });
+                });
+                tasks.sort((a, b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0));
+                currentTasks = tasks; // Update local cache
+                renderTasks(tasks);
+            }, (error) => {
+                console.error("Error fetching tasks:", error);
+                showStatusMessage("Could not fetch tasks.", "error");
+            });
+        }
+
+        // --- UI Rendering ---
+        function renderTasks(tasks) {
+            taskList.innerHTML = '';
+            const incompleteTasks = tasks.filter(t => !t.completed);
+            summarizeBtn.disabled = incompleteTasks.length === 0;
+            prioritizeBtn.disabled = incompleteTasks.length < 2;
+            
+            if (tasks.length === 0) {
+                noTasksMessage.classList.remove('hidden');
+            } else {
+                noTasksMessage.classList.add('hidden');
+                tasks.forEach(task => {
+                    const taskElement = createTaskElement(task);
+                    taskList.appendChild(taskElement);
+                });
+            }
+        }
+
+        function createTaskElement(task) {
+            const li = document.createElement('li');
+            li.setAttribute('data-id', task.id);
+            li.className = `task-item flex items-center justify-between p-3 bg-white/60 dark:bg-gray-700/50 shadow-md rounded-lg border-l-4 border-transparent hover:border-purple-500 ${task.completed ? 'completed' : ''}`;
+            
+            const contentWrapper = document.createElement('div');
+            contentWrapper.className = 'flex items-center flex-grow min-w-0'; // Added min-w-0 for flex truncation
+
+            if (task.priority) {
+                const priorityBadge = document.createElement('span');
+                priorityBadge.textContent = task.priority;
+                priorityBadge.className = `text-xs font-semibold mr-3 px-2.5 py-0.5 rounded-full flex-shrink-0 ${getPriorityClasses(task.priority)}`;
+                contentWrapper.appendChild(priorityBadge);
+            }
+
+            const textSpan = document.createElement('span');
+            textSpan.textContent = task.text;
+            textSpan.className = `flex-grow cursor-pointer truncate`;
+            textSpan.addEventListener('click', () => toggleTaskCompletion(task.id, task.completed));
+            contentWrapper.appendChild(textSpan);
+
+            const buttonContainer = document.createElement('div');
+            buttonContainer.className = 'flex items-center space-x-1 ml-2 flex-shrink-0';
+
+            const breakdownButton = createButton('✨', 'Break Down Task', () => breakDownTask(task.id, task.text), 'text-yellow-500 text-lg');
+            if (task.completed) breakdownButton.disabled = true;
+
+            const deleteButton = createButton('🗑️', 'Delete', () => deleteTask(task.id), 'text-red-400 hover:text-red-500 text-lg');
+
+            buttonContainer.appendChild(breakdownButton);
+            buttonContainer.appendChild(deleteButton);
+            li.appendChild(contentWrapper);
+            li.appendChild(buttonContainer);
+
+            return li;
+        }
+
+        function getPriorityClasses(priority) {
+            switch (priority?.toLowerCase()) {
+                case 'high': return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300';
+                case 'medium': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300';
+                case 'low': return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
+                default: return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200';
+            }
+        }
+
+        function createButton(text, ariaLabel, onClick, extraClasses = '') {
+            const button = document.createElement('button');
+            button.innerHTML = text;
+            button.setAttribute('aria-label', ariaLabel);
+            button.className = `p-2 rounded-full hover:bg-gray-200/50 dark:hover:bg-gray-600/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${extraClasses}`;
+            button.addEventListener('click', onClick);
+            return button;
+        }
+        
+        // --- CRUD Operations ---
+        async function addTask(text) {
+            if (!userId || !tasksCollectionRef) {
+                 showStatusMessage("Not connected.", "error");
+                 return;
+            }
+            try {
+                await addDoc(tasksCollectionRef, {
+                    text: text,
+                    completed: false,
+                    createdAt: serverTimestamp(),
+                    priority: null
+                });
+                showStatusMessage("Task added successfully!", "success");
+            } catch (error) {
+                console.error("Error adding document: ", error);
+                showStatusMessage("Failed to add task.", "error");
+            }
+        }
+
+        async function toggleTaskCompletion(id, currentStatus) {
+            if (!userId) return;
+            const taskDocRef = doc(db, `/artifacts/${appId}/users/${userId}/tasks`, id);
+            try {
+                await updateDoc(taskDocRef, { completed: !currentStatus });
+            } catch (error) {
+                console.error("Error updating task status: ", error);
+                showStatusMessage("Failed to update task.", "error");
+            }
+        }
+
+        async function deleteTask(id) {
+            if (!userId) return;
+            const taskDocRef = doc(db, `/artifacts/${appId}/users/${userId}/tasks`, id);
+            try {
+                await deleteDoc(taskDocRef);
+                showStatusMessage("Task deleted.", "success");
+            } catch (error) {
+                console.error("Error deleting document: ", error);
+                showStatusMessage("Failed to delete task.", "error");
+            }
+        }
+
+        // --- Event Listeners ---
+        addTaskForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const taskText = taskInput.value.trim();
+            if (taskText) {
+                addTask(taskText);
+                taskInput.value = '';
+            }
+        });
+        
+        closeModalBtn.addEventListener('click', () => toggleModal(false));
+        summaryModal.addEventListener('click', (e) => {
+            if (e.target === summaryModal) toggleModal(false);
+        });
+
+        // --- AI Features ---
+
+        // Suggest new tasks based on a goal
+        aiSuggestBtn.addEventListener('click', async () => {
+            const prompt = aiPromptInput.value.trim();
+            if (!prompt) return showStatusMessage("Please enter a goal for the AI.", "error");
+
+            setElementLoading(aiSuggestBtn, aiBtnText, aiLoadingSpinner, true, 'Generating...');
+            const suggestedTasks = await callGemini(
+                `Based on the goal "${prompt}", generate a short list of 3-5 actionable to-do items.`,
+                { type: "OBJECT", properties: { tasks: { type: "ARRAY", items: { type: "STRING" } } } }
+            );
+            setElementLoading(aiSuggestBtn, aiBtnText, aiLoadingSpinner, false, '✨ Suggest Tasks');
+
+            if (suggestedTasks?.tasks?.length > 0) {
+                for (const taskText of suggestedTasks.tasks) { await addTask(taskText); }
+                showStatusMessage("AI tasks added!", "success");
+                aiPromptInput.value = '';
+            } else {
+                showStatusMessage("AI couldn't suggest tasks for that.", "error");
+            }
+        });
+        
+        // Break down a single task into sub-tasks
+        async function breakDownTask(taskId, taskText) {
+            const taskElement = document.querySelector(`li[data-id="${taskId}"]`);
+            if (!taskElement) return;
+
+            const originalButton = taskElement.querySelector('button[aria-label="Break Down Task"]');
+            const spinner = document.createElement('div');
+            spinner.className = 'loading-spinner-small';
+            originalButton.innerHTML = '';
+            originalButton.appendChild(spinner);
+            originalButton.disabled = true;
+
+            const subTasks = await callGemini(
+                `Break down the following task into smaller, actionable steps: "${taskText}". Do not include the original task in the steps.`,
+                 { type: "OBJECT", properties: { tasks: { type: "ARRAY", items: { type: "STRING" } } } }
+            );
+
+            if (subTasks?.tasks?.length > 0) {
+                for (const text of subTasks.tasks) { await addTask(text); }
+                await deleteTask(taskId);
+                showStatusMessage(`"${taskText}" was broken down.`, "success");
+            } else {
+                showStatusMessage("AI couldn't break down this task.", "error");
+                originalButton.innerHTML = '✨';
+                originalButton.disabled = false;
+            }
+        }
+
+        // Summarize all incomplete tasks
+        summarizeBtn.addEventListener('click', async () => {
+            const incompleteTasks = currentTasks.filter(task => !task.completed).map(task => task.text);
+            if (incompleteTasks.length === 0) return showStatusMessage("No pending tasks to summarize.", "info");
+
+            setElementLoading(summarizeBtn, summarizeBtnText, summarizeLoadingSpinner, true, 'Summarizing...');
+            const summary = await callGemini(`Summarize the following to-do list in a concise paragraph for a daily briefing: ${incompleteTasks.join(', ')}`);
+            setElementLoading(summarizeBtn, summarizeBtnText, summarizeLoadingSpinner, false, '✨ Summarize');
+            
+            if (summary) {
+                summaryContent.innerHTML = `<p>${summary.replace(/\n/g, '<br>')}</p>`;
+                toggleModal(true);
+            } else {
+                showStatusMessage("AI couldn't generate a summary.", "error");
+            }
+        });
+
+        // Prioritize all incomplete tasks
+        prioritizeBtn.addEventListener('click', async () => {
+            const incompleteTasks = currentTasks.filter(task => !task.completed);
+            if (incompleteTasks.length < 2) return showStatusMessage("Need at least two tasks to prioritize.", "info");
+
+            const taskTexts = incompleteTasks.map(task => task.text);
+            
+            setElementLoading(prioritizeBtn, prioritizeBtnText, prioritizeLoadingSpinner, true, 'Prioritizing...');
+            const result = await callGemini(
+                `As a productivity expert, analyze the following list of tasks and assign a priority to each. The priority must be one of: "High", "Medium", or "Low". Tasks: [${taskTexts.join(', ')}]`,
+                 { type: "OBJECT", properties: { prioritizedTasks: { type: "ARRAY", items: { type: "OBJECT", properties: { taskText: {type: "STRING"}, priority: {type: "STRING"}}}}}}
+            );
+            setElementLoading(prioritizeBtn, prioritizeBtnText, prioritizeLoadingSpinner, false, '✨ Prioritize Tasks');
+
+            if (result?.prioritizedTasks?.length > 0) {
+                 for (const pTask of result.prioritizedTasks) {
+                    const originalTask = incompleteTasks.find(t => t.text === pTask.taskText);
+                    if (originalTask) {
+                        const taskDocRef = doc(db, `/artifacts/${appId}/users/${userId}/tasks`, originalTask.id);
+                        await updateDoc(taskDocRef, { priority: pTask.priority });
+                    }
+                }
+                showStatusMessage("Tasks have been prioritized!", "success");
+            } else {
+                 showStatusMessage("AI couldn't prioritize tasks.", "error");
+            }
+        });
+
+
+        // --- Generic Gemini API Caller ---
+        async function callGemini(prompt, schema = null) {
+            if (!GEMINI_API_KEY) {
+                showStatusMessage("Gemini API key is missing.", "error");
+                console.error("Gemini API key is not set.");
+                return null;
+            }
+
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${GEMINI_API_KEY}`;
+
+            const payload = { contents: [{ parts: [{ text: prompt }] }] };
+            if (schema) {
+                payload.generationConfig = {
+                    responseMimeType: "application/json",
+                    responseSchema: schema
+                };
+            }
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (!response.ok) throw new Error(`API request failed with status ${response.status}`);
+                const result = await response.json();
+                const part = result.candidates?.[0]?.content?.parts?.[0];
+                if (!part) throw new Error("Invalid response structure from API.");
+                
+                return schema ? JSON.parse(part.text) : part.text;
+
+            } catch (error) {
+                console.error("Error with Gemini API call:", error);
+                return null;
+            }
+        }
+
+        // --- Utility Functions ---
+        function setElementLoading(btn, textEl, spinnerEl, isLoading, text) {
+            btn.disabled = isLoading;
+            textEl.textContent = text;
+            spinnerEl.classList.toggle('hidden', !isLoading);
+        }
+        
+        function toggleModal(show) {
+            if (show) {
+                summaryModal.classList.remove('pointer-events-none', 'opacity-0');
+                summaryModal.querySelector('.modal-content').classList.remove('opacity-0', 'scale-95');
+            } else {
+                summaryModal.classList.add('opacity-0');
+                summaryModal.querySelector('.modal-content').classList.add('opacity-0', 'scale-95');
+                setTimeout(() => summaryModal.classList.add('pointer-events-none'), 300);
+            }
+        }
+
+        let messageTimeout;
+        function showStatusMessage(message, type = 'info') {
+            statusMessage.textContent = message;
+            statusMessage.classList.remove('bg-red-500', 'bg-green-500', 'bg-gray-800', 'bg-blue-500');
+            if (type === 'error') statusMessage.classList.add('bg-red-500');
+            else if (type === 'success') statusMessage.classList.add('bg-green-500');
+            else if (type === 'info') statusMessage.classList.add('bg-blue-500');
+            else statusMessage.classList.add('bg-gray-800');
+            
+            statusMessage.classList.remove('opacity-0');
+            clearTimeout(messageTimeout);
+            messageTimeout = setTimeout(() => statusMessage.classList.add('opacity-0'), 3000);
+        }
+    </script>
+</body>
+</html>
+
